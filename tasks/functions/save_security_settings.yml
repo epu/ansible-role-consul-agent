@@ -1,10 +1,25 @@
 ---
 
-- name: FUNCTION - save_security_settings
-  delegate_to: 127.0.0.1
+- name: Set local config file name
+  set_fact:
+    consul_agent_security_config_file_local: "{{ '/tmp/' + (consul_agent_security_config_file.path | basename) }}"
+
+- name: FUNCTION - save_security_settings_locally
   copy:
     content: '{{ content }}'
-    dest: '{{ consul_agent_security_config_file.path }}'
+    dest: '{{ consul_agent_security_config_file_local }}'
     owner: '{{ consul_agent_security_config_file.owner }}'
     group: '{{ consul_agent_security_config_file.group }}'
     mode: '{{ consul_agent_security_config_file.mode }}'
+
+- name: FUNCTION - save_security_settings
+  synchronize:
+    mode: pull
+    src: '{{ consul_agent_security_config_file_local }}'
+    dest: '{{ consul_agent_security_config_file.path }}'
+
+- name: FUNCTION - remove remote security settings
+  file:
+    path: '{{ consul_agent_security_config_file_local }}'
+    state: absent
+
