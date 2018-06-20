@@ -6,7 +6,7 @@ After=basic.target network.target
 [Service]
 User={{ _consul_agent_user.name }}
 Group={{ _consul_agent_group.name }}
-ExecStart=/usr/local/bin/consul agent {% for key, value in consul_agent_opts.iteritems() -%} 
+ExecStart=/usr/local/bin/consul agent {% for key, value in consul_agent_opts.items() -%} 
 {% if value is none %}-{{ key }} {% else -%}
 {% for opt in value %}-{{ key }}={{ opt }} {% endfor %}{% endif -%}
 {% endfor %}
